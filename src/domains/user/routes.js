@@ -20,10 +20,10 @@ router.post("/", async (req, res) => {
 		if (! (email && password)) throw Error("One or mode Fields are empty")
 
 		const authenticatedUser = await authenticateUser({email, password});
-		res.status(200).json({status: "success", message: "Login successful", authenticatedUser});
+		res.status(200).json({status: "success", message: "Login successful", user: authenticatedUser});
 
 	} catch (error) {
-		res.status(400).json({status: "fail", message: error.message, authenticatedUser: "noUser"});
+		res.status(400).json({status: "fail", message: error.message});
 	}
 });
 
@@ -53,7 +53,7 @@ router.post("/signup", async (req, res) => {
 		await sendVerificationOTPEmail(email);
 		res.status(200).json({status: "success", message: "Signup successful", user: newUser});
 	} catch (error) {
-		res.status(400).json(error.message);
+		res.status(400).json({status: "success", message: error.message} );
 	}
 });
 
