@@ -51,7 +51,7 @@ router.post("/signup", async (req, res) => {
 		});
 
 		await sendVerificationOTPEmail(email);
-		res.status(200).json(newUser);
+		res.status(200).json({status: "success", message: "Signup successful", user: newUser});
 	} catch (error) {
 		res.status(400).json(error.message);
 	}
