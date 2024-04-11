@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
 		res.status(200).json({status: "success", message: "Login successful", authenticatedUser});
 
 	} catch (error) {
-		res.status(400).json({status: "fail", message: error.message, authenticatedUser: false});
+		res.status(400).json({status: "fail", message: error.message, authenticatedUser: "noUser"});
 	}
 });
 
