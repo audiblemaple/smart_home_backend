@@ -21,8 +21,8 @@ const authenticateUser = async (data) => {
 
 		const fetchedUser = await User.findOne({ email });
 
-		if (! fetchedUser) throw Error("Invalid Email");
-		if (!fetchedUser.verified) throw Error("Email is not verified, please check your inbox");
+		if (!fetchedUser) throw Error("Invalid Email");
+		// if (!fetchedUser.verified) return {email: email, message: "Email is not verified, please check your inbox"};
 
 		const hashedPassword = fetchedUser.password;
 
