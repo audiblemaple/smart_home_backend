@@ -3,7 +3,7 @@ const generateOTP = require("../../utils/generateOTP");
 const sendEmail = require("../../utils/sendEmail");
 const e = require("express");
 const {hashData, verifyHashedData} = require("../../utils/hashData");
-const {AUTH_EMAIL} = process.env;
+const {SENDGRID_AUTH_EMAIL} = process.env;
 
 
 const verifyOTP = async ({email, otp}) => {
@@ -45,11 +45,13 @@ const sendOTP = async ({ email, subject, message, duration = 1 }) => {
 			const generatedOTP = await generateOTP();
 
 			const mailOptions = {
-				from: AUTH_EMAIL,
 				to: email,
-				subject,
+				from: SENDGRID_AUTH_EMAIL,
+				subject: subject,
+				text: 'Smart home account verification',
 				html: `<p>${message}</p><p style="color: tomato; font-size: 25px; letter-spacing: 2px" > <b>${generatedOTP}</b></p><p><b>This code will expire in ${duration} hour(s).</b></p>`
 			};
+
 			await sendEmail(mailOptions);
 
 			// save
