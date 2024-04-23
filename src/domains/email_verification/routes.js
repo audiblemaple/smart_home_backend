@@ -8,10 +8,10 @@ router.post("/verify", async (req, res) => {
 		if (! (email && otp)) throw Error("Empty otp details are not allowed");
 
 		await verifyUserEmail({email, otp});
-		res.status(200).json({email, verified: true})
+		res.status(200).json({status: "success", message: "Verification successful", verified: true});
 
 	} catch (error) {
-		res.status(400).json(error.message);
+		res.status(400).json({status: "failed", message: error.message});
 	}
 });
 
