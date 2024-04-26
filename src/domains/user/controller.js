@@ -49,13 +49,17 @@ const createNewUser = async (data) => {
 		// Hash password
 		const hashedPassword = await hashData(password);
 
+		const modelData = await uploadToAWSS3(model);
+		let { URL, AWSKey } = modelData;
+
 		const newUser = new User({
 			name,
 			email,
 			password: hashedPassword,
 			dateOfBirth: dateOfBirth,
 			models: [{
-				URL: model ? await uploadToAWSS3(model) : "noModel"
+				URL: model ? URL : "noModel",
+				AWSKey
 			}]
 		});
 		return await newUser.save();
@@ -63,8 +67,6 @@ const createNewUser = async (data) => {
 		throw error;
 	}
 }
-
-
 
 const uploadToAWSS3 = async (file) => {
 	try {
@@ -86,121 +88,33 @@ const uploadToAWSS3 = async (file) => {
 		});
 
 		const result = await upload.done();
-		return result.Location;
+		console.log(result);
+		return {URL: result.Location, AWSKey: result.Key};
 	} catch (error) {
 		console.error("Error uploading file:", error);
 		throw error;
 	}
 }
-module.exports = {createNewUser, authenticateUser}
 
+async function addModelToUsersList(email, newModel) {
+	try {
+		return await User.updateOne({ email: email }, { $push: { models: newModel } });
+	} catch (err) {
+		console.error('Error updating user:', err);
+		return false;
+	}
+}
 
+async function removeModelFromUserList(email, modelId) {
+	try {
+		return await User.updateOne(
+			{email: email},
+			{$pull: {models: {_id: modelId}}}
+		);
+	} catch (err) {
+		console.error('Error removing model:', err);
+		throw err;
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const User = require("./model")
-// const {hashData, verifyHashedData} = require("../../utils/hashData");
-// const createToken = require("../../utils/createToken");
-//
-//
-// const authenticateUser = async (data) => {
-// 	try {
-// 		const {email, password} = data;
-//
-// 		const fetchedUser = await User.findOne({ email });
-//
-// 		if (! fetchedUser)
-// 			throw Error("Invalid Email");
-//
-// 		if (!fetchedUser.verified) throw Error("Email is not verified, please check your inbox");
-//
-// 		const hashedPassword = fetchedUser.password;
-//
-// 		if (! await verifyHashedData(hashedPassword, password))
-// 			throw Error("Invalid Password");
-//
-// 		// create user token
-// 		fetchedUser.token = await createToken({userId: fetchedUser._id, email});
-// 		return fetchedUser;
-//
-// 	} catch (error){
-// 		throw error;
-// 	}
-// }
-//
-// const createNewUser = async (data) => {
-// 	try {
-// 		const { name, email, password, dateOfBirth, model } = data;
-//
-// 		console.log(name)
-// 		console.log(email)
-// 		console.log(password)
-// 		console.log(dateOfBirth)
-// 		console.log(model)
-//
-// 		// Check if user exists
-// 		const existingUser = await User.findOne({email});
-//
-// 		if (existingUser)
-// 			throw Error("User already exist.");
-//
-// 		// Hash password
-// 		const hashedPassword = await hashData(password);
-//
-//
-//
-// 		// uploadToAWSS3(houseModel);
-//
-// 		const newUser = new User({
-// 			name,
-// 			email,
-// 			password: hashedPassword,
-// 			dateOfBirth: dateOfBirth
-// 		});
-// 		return await newUser.save();
-// 	} catch (error){
-// 		throw error;
-// 	}
-// }
-//
-//
-// const uploadToAWSS3 = async (file) => {
-// 	try {
-// 		console.log(file);
-// 	} catch (error){
-// 		throw error;
-// 	}
-// }
-//
-//
-//
-// module.exports = {createNewUser, authenticateUser}
-
-
-
-
-
-
-
-
-
-
+module.exports = {createNewUser, authenticateUser, uploadToAWSS3, addModelToUsersList, removeModelFromUserList}

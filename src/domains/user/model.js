@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-
-// TODO: verified should be false, its for debug purposes..
 const UserSchema = new Schema({
 	name: String,
 	email: {
@@ -14,12 +12,16 @@ const UserSchema = new Schema({
 	token: String,
 	verified: {
 		type: Boolean,
-		default: true
+		default: false
 	},
 	models: [{
 		URL: {
 			type: String,
 			default: 'noModel'
+		},
+		AWSKey: {
+			type: String,
+			default: 'noKey'
 		},
 		initialRotationVal: {
 			type: Number,

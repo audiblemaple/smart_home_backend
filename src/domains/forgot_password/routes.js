@@ -11,7 +11,6 @@ router.post("/reset", async (req, res) => {
 		if (! (email && otp && newPassword)) throw Error("Email, otp and password must be supplied");
 
 		await resetUserPassword({email, otp, newPassword});
-		// res.status(200).json({email, newPasswordReset: true});
 		res.status(200).json({status: "success", message: "Password changed successfully"});
 	} catch (error){
 		res.status(400).json(error.message);
