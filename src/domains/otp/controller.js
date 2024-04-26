@@ -64,7 +64,6 @@ const sendOTP = async ({ email, subject, message, duration = 1 }) => {
 			});
 
 			return await newOTP.save();
-
 	} catch (error){
 		throw error;
 	}
